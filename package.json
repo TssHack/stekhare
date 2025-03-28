@@ -1,0 +1,14 @@
+{
+  "name": "random-link-api",
+  "version": "1.0.0",
+  "description": "API to return a random URL from a JSON file",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "author": "ehsan fazli",
+  "license": "ISC"
+}
