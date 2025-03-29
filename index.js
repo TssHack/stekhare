@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs');
+const axios = require('axios'); // برای ارسال درخواست HTTP
 const app = express();
 const port = 3000;
 
@@ -19,8 +20,20 @@ const loadLinks = () => {
   }
 };
 
+// بررسی اینکه آیا لینک حاوی تصویر است
+const isImageLink = async (url) => {
+  try {
+    const response = await axios.head(url); // استفاده از درخواست HEAD برای گرفتن متادیتای فایل
+    const contentType = response.headers['content-type'];
+    return contentType && contentType.startsWith('image/');
+  } catch (err) {
+    console.error('Error checking image URL:', err);
+    return false;
+  }
+};
+
 // مسیر API برای برگرداندن یک لینک تصادفی
-app.get('/s', (req, res) => {
+app.get('/s', async (req, res) => {
   const links = loadLinks();
   
   // اگر لینک‌ها خالی بودند، ارور برمی‌گردانیم
@@ -28,9 +41,26 @@ app.get('/s', (req, res) => {
     return res.status(500).json({ error: 'No links available.' });
   }
 
-  const randomIndex = Math.floor(Math.random() * links.length);
+  let selectedLink = '';
+  let isImage = false;
+
+  // تلاش برای یافتن لینک تصویری
+  for (let i = 0; i < links.length; i++) {
+    selectedLink = links[i];
+    isImage = await isImageLink(selectedLink);
+
+    if (isImage) {
+      break;
+    }
+  }
+
+  // اگر هیچ لینک تصویری یافت نشد، ارور برمی‌گردانیم
+  if (!isImage) {
+    return res.status(500).json({ error: 'No image link available.' });
+  }
+
   res.json({ 
-    url: links[randomIndex],
+    url: selectedLink,
     developer: 'Ehsan Fazli'  // اضافه کردن نام توسعه‌دهنده به خروجی
   });
 });
