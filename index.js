@@ -7,7 +7,8 @@ const port = 3000;
 const loadLinks = () => {
   try {
     // خواندن محتوای فایل متنی
-    const data = fs.readFileSync('links.txt', 'utf8');
+    const linksPath = path.join(__dirname, 'links.txt');
+    const data = fs.readFileSync(linksPath, 'utf8');
     
     // جدا کردن لینک‌ها بر اساس خط
     const links = data.split('\n').map(link => link.trim()).filter(link => link.length > 0);
